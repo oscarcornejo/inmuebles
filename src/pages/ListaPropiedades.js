@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-// import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { Container, Paper, Grid, Breadcrumbs, Link, TextField, Card, CardMedia, CardContent, CardActions, Button } from "@material-ui/core";
 import HomeIcon from "@material-ui/icons/Home";
@@ -118,8 +118,8 @@ const ListaPropiedades = ({history}) => {
     }
 
   
-
-//   const usuarioLogeado = useSelector(state => state.usuarioReducer.usuarioLogeado);
+//  const usuarioLogeado = useSelector(state => state.authReducer.usuarioLogeado);
+    const usuarioLogeado = useSelector(state => state.authReducer.usuarioLogeado);
 
   return (
     <Container style={style.cardGrid}>
@@ -171,12 +171,19 @@ const ListaPropiedades = ({history}) => {
                         <Button size="small" color="primary" onClick={() => verPropiedad(item.id)}>
                             Ver
                         </Button>
-                      <Button size="small" color="primary" onClick={() => editarInmueble(item.id)}>
-                        Editar
-                      </Button>
-                      <Button size="small" color="primary" onClick={() => eliminarPropiedad(item.id)}>
-                        Eliminar
-                      </Button>
+                      {
+                        usuarioLogeado &&
+                        <Button size="small" color="primary" onClick={() => editarInmueble(item.id)}>
+                          Editar
+                        </Button>
+                      }
+                      {
+                        usuarioLogeado &&
+                      
+                        <Button size="small" color="primary" onClick={() => eliminarPropiedad(item.id)}>
+                          Eliminar
+                        </Button>
+                      }
                     </CardActions>
                   </Card>
                 </Grid>

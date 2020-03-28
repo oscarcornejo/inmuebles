@@ -1,30 +1,21 @@
 import React, { useState, useEffect } from "react";
-import {
-  Paper,
-  Container,
-  Grid,
-  Breadcrumbs,
-  Link,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  TextField,
-  Button,
-  Table,
-  TableRow,
-  TableCell,
-  TableBody
-} from "@material-ui/core";
+
+// MATERIAL UI
+import { Paper, Container, Grid, Breadcrumbs, Link, Typography, FormControl, InputLabel, Select,
+  MenuItem, TextField, Button, Table, TableRow, TableCell, TableBody } from "@material-ui/core";
 import HomeIcon from "@material-ui/icons/Home";
+import { makeStyles } from "@material-ui/core/styles";
+
+// LIBRERIAS
 import ImageUploader from "react-images-upload";
 import uuid from "uuid";
 
-import { makeStyles } from "@material-ui/core/styles";
-
+// REDUX
 import { crearKeyword } from "../redux/actions/Keyword";
+import {connect} from 'react-redux';
+import { openMensaje } from '../redux/actions/snackbarAction';
 
+// FIREBASE
 import firebase from "../config/configFirebase";
 import "firebase/auth";
 import "firebase/firestore";
@@ -71,133 +62,69 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const EditarPropiedad = props => {
+  
   const classes = useStyles();
   const uniqueID = uuid.v4();
   const fotoKey = uuid.v4();
 
   const { history, openMensaje } = props;
-
-  const [nombrePropiedad, setNombrePropiedad] = useState("");
-  const [tipoPropiedad, setTipoPropiedad] = useState("");
-  const [tipoOperacion, setTipoOperacion] = useState("");
-  const [direccion, setDireccion] = useState("");
-  const [comuna, setComuna] = useState("");
-  const [ciudad, setCiudad] = useState("");
-  const [pais, setPais] = useState("");
-  const [descripcion, setDescripcion] = useState("");
-  const [mtsTotal, setMtsTotal] = useState(0);
-  const [mtsConstruidos, setMtsConstruidos] = useState(0);
-  const [dormitorios, setDormitorios] = useState(0);
-  const [banios, setBanios] = useState(0);
-  const [precio, setPrecio] = useState(0);
-  const [fotos, setFotos] = useState([]);
-  const [archivos, setArchivos] = useState([]);
+  const { id } = props.match.params;
   const [propiedad, setPropiedad] = useState({});
 
-  const [values, setValues] = useState({});
-
-  const { id } = props.match.params;
-
   useEffect(() => {
-    const fetchData = async () => {
-      await firebase
-        .firestore()
-        .collection("propiedades")
-        .doc(id)
-        .get()
-        .then(resp => {
-          console.log(resp.data());
+    const getData = async () => {
+      firebase.firestore().collection("propiedades").doc(id).get()
+        .then( resp =>  {
+          console.log('propiedades:: ', resp.data());
           setPropiedad(resp.data());
-          setNombrePropiedad(propiedad.nombrePropiedad);
-          setTipoPropiedad(propiedad.tipoPropiedad);
-          setTipoOperacion(propiedad.tipoOperacion);
-          setDireccion(propiedad.direccion);
-          setComuna(propiedad.comuna);
-          setCiudad(propiedad.ciudad);
-          setPais(propiedad.pais);
-          setDescripcion(propiedad.descripcion);
-          setMtsTotal(propiedad.mtsTotal);
-          setMtsConstruidos(propiedad.mtsConstruidos);
-          setDormitorios(propiedad.dormitorios);
-          setBanios(propiedad.banios);
-          setPrecio(propiedad.precio);
-          setFotos(propiedad.fotos);
-        });
-    };
-    fetchData();
-  }, [
-    id,
-    propiedad.nombrePropiedad,
-    propiedad.tipoPropiedad,
-    propiedad.tipoOperacion,
-    propiedad.direccion,
-    propiedad.comuna,
-    propiedad.ciudad,
-    propiedad.pais,
-    propiedad.descripcion,
-    propiedad.mtsTotal,
-    propiedad.mtsConstruidos,
-    propiedad.dormitorios,
-    propiedad.banios,
-    propiedad.precio
-  ]);
+        }).catch( error => {
+          console.log(error.message);
+      });
+    }
+    getData();
+  }, [id]);
 
-    // const cambiarDato = e => {
-    //     setValues(values => ({ ...values, [e.target.name]: e.target.value }));
-    // }
+  const handleChange = (e) => {
+    setPropiedad({...propiedad, [e.target.name]: e.target.value})
+  }
 
-  const subirImagenes = imagenes => {
-    // const {id} = props.match.params;
-
-    const propiedadData = {
-      nombrePropiedad,
-      tipoPropiedad,
-      tipoOperacion,
-      direccion,
-      comuna,
-      ciudad,
-      pais,
-      descripcion,
-      mtsTotal,
-      mtsConstruidos,
-      dormitorios,
-      banios,
-      precio,
-      fotos,
-      keywords: null
-      // archivos
-    };
-
+  const subirImagenes = async (imagenes) => {
     //agregar un nombre dinamico por cada imagen que necesites subir al firestorage
-
     Object.keys(imagenes).forEach(key => {
       let codigoDinamico = uuid.v4();
       let nombreImagen = imagenes[key].name;
       let extension = nombreImagen.split(".").pop();
-      imagenes[key].alias = (
-        nombreImagen.split(".")[0] +
-        "_" +
-        codigoDinamico +
-        "." +
-        extension
-      )
-        .replace(/\s/g, "_")
-        .toLowerCase();
+      imagenes[key].alias = (nombreImagen.split(".")[0] + "_" + codigoDinamico + "." + extension).replace(/\s/g, "_").toLowerCase();
     });
 
-    this.props.firebase.guardarDocumentos(imagenes).then(urlImagenes => {
-      propiedadData.fotos = urlImagenes;
-      setFotos(urlImagenes);
-
-      this.props.firebase.db
-        .collection("Inmuebles")
-        .doc(id)
-        .set(propiedadData, { merge: true })
-        .then(success => {
-          setPropiedad(propiedadData);
+    await guardarFotosMultiples(imagenes)
+    .then( async (urlImagenes) => {
+      propiedad.fotos = propiedad.fotos.concat(urlImagenes);
+      
+      await firebase.firestore().collection("propiedades").doc(id).set(propiedad, {merge: true})
+        .then( (success) =>{
+          setPropiedad(propiedad);
+          const mensaje = { open: true,  mensaje: 'La Propiedad se ha publicado con Éxito' }
+          openMensaje(mensaje);
+          history.push("/");
+        }).catch( error => {
+          console.log(error.message);
+          const mensaje = { open: true, mensaje: error.message }
+          openMensaje(mensaje);
         });
+    }).catch( error => {
+      console.log(error.message);
     });
-  };
+  }
+
+  const guardarFotosMultiples = (documentos) => {
+    const ref = firebase.storage().ref();
+    return Promise.all(documentos.map(file =>{
+        return ref.child(file.alias).put(file).then(snapshot =>{
+            return ref.child(file.alias).getDownloadURL();
+        })
+    }))
+  }
 
   const eliminarFoto = fotoUrl => () => {
     // const {id} = props.match.params;
@@ -207,85 +134,66 @@ const EditarPropiedad = props => {
     fotoID = fotoID[0];
 
     firebase.storage().ref().child(fotoID).delete();
-
-    let fotoList = Object.values(fotos).filter(foto => {
-        return foto.name !== fotoUrl
-    });
-
-    
-
-    // setFotos(Object.values(fotos).filter(foto => {
-    //     return foto.name !== fotoUrl
-    // }));
-
-    // setFotos(fotoList);
-
-    const propiedadData = {
-        nombrePropiedad,
-        tipoPropiedad,
-        tipoOperacion,
-        direccion,
-        comuna,
-        ciudad,
-        pais,
-        descripcion,
-        mtsTotal,
-        mtsConstruidos,
-        dormitorios,
-        banios,
-        precio,
-        fotos: fotoList,
-        keywords: null
-        // archivos
-      };
-
-    firebase.firestore().collection("propiedades").doc(id).set(propiedadData, { merge: true })
-      .then(success => {
-        setPropiedad(propiedadData);
-      });
   };
 
   const guardarPropiedad = () => {
     const { id } = props.match.params;
 
-    const propiedadData = {
-      nombrePropiedad,
-      tipoPropiedad,
-      tipoOperacion,
-      direccion,
-      comuna,
-      ciudad,
-      pais,
-      descripcion,
-      mtsTotal,
-      mtsConstruidos,
-      dormitorios,
-      banios,
-      precio,
-      fotos,
-      keywords: null
-      // archivos
-    };
+    // const propiedadData = {
+    //   nombrePropiedad, tipoPropiedad, tipoOperacion,
+    //   direccion, comuna, ciudad, pais, descripcion, mtsTotal, 
+    //   mtsConstruidos, dormitorios, banios, precio, fotos, keywords: null
+    //   // archivos
+    // };
 
-    const textoBusqueda =
-      propiedadData.direccion +
-      " " +
-      propiedadData.ciudad +
-      " " +
-      propiedadData.pais;
-    const keyWords = crearKeyword(textoBusqueda);
+    // Object.keys(archivos).forEach( function(key) {
+    //   let valorDinamico = Math.floor(new Date().getTime() / 1000);
+    //   let nombre = archivos[key].name;
+    //   let extension = nombre.split(".").pop();
+    //   archivos[key].alias = ( nombre.split(".")[0] + "_" + valorDinamico + "." + extension)
+    //     .replace(/\s/g, "_").toLowerCase();
+    // });
 
-    propiedadData.keywords = keyWords;
+    // const textoBusqueda = propiedadData.direccion + " " + propiedadData.comuna + " " + propiedadData.ciudad + " " + propiedadData.pais;
+    // const keywords = crearKeyword(textoBusqueda);
 
-    firebase
-      .firestore()
-      .collection("propiedades")
-      .doc(id)
-      .set(propiedadData, { merge: true })
-      .then(success => {
-        history.push("/");
-      });
+    // propiedadData.keywords = keyWords;
+    
+    // guardarFotosMultiples(archivos)
+    //   .then( async (urlImagenes) => {
+    //     const urlFotos = Object.assign({}, urlImagenes);
+    //     const id = uuid.v4();
+    //     propiedadData.fotos = urlFotos;
+    //     propiedadData.keywords = keywords;
+
+    //         await firebase.firestore().collection("propiedades").doc(id).set(propiedadData, {merge: true})
+    //         .then( (success) =>{
+    //             setPropiedad(propiedadData);
+    //             const mensaje = {
+    //                 open: true, 
+    //                 mensaje: 'La Propiedad se ha publicado con Éxito'
+    //             }
+    //             openMensaje(mensaje);
+    //             history.push("/");
+    //         }).catch( error => {
+    //         const mensaje = {
+    //             open: true, 
+    //             mensaje: error.message
+    //         }
+    //         openMensaje(mensaje);
+    //         });
+    //   })
+
+    // firebase
+    //   .firestore()
+    //   .collection("propiedades")
+    //   .doc(id)
+    //   .set(propiedadData, { merge: true })
+    //   .then(success => {
+    //     history.push("/");
+    //   });
   };
+
 
   return (
     <Container style={style.container}>
@@ -302,15 +210,7 @@ const EditarPropiedad = props => {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <TextField
-              name='nombrePropiedad'
-              label="Nombre Propiedad"
-              fullWidth
-              value={nombrePropiedad || ''}
-              onChange={e => setNombrePropiedad(e.target.value)}
-                // value={nombrePropiedad || ''}
-                // onChange={cambiarDato}
-            />
+            <TextField name='nombrePropiedad' label="Nombre Propiedad" fullWidth value={propiedad.nombrePropiedad || ''} onChange={handleChange} />
           </Grid>
 
           <Grid item xs={12} md={3}>
@@ -318,13 +218,8 @@ const EditarPropiedad = props => {
               <InputLabel id="dormitorios-select-label">
                 Tipo Propiedad
               </InputLabel>
-              <Select name='tipoPropiedad'
-                labelId="dormitorios-select-label"
-                id="dormitorios-select"
-                value={tipoPropiedad ? tipoPropiedad : ''}
-                onChange={e => setTipoPropiedad(e.target.value)}
-                className={classes.selectEmpty}
-              >
+              <Select name='tipoPropiedad' labelId="dormitorios-select-label" id="dormitorios-select"
+                value={propiedad.tipoPropiedad ? propiedad.tipoPropiedad : ''} onChange={handleChange} className={classes.selectEmpty} >
                 <MenuItem value=''>
                   <em>Seleccionar Tipo</em>
                 </MenuItem>
@@ -344,8 +239,8 @@ const EditarPropiedad = props => {
               <Select name='tipoOperacion'
                 labelId="dormitorios-select-label"
                 id="dormitorios-select"
-                value={tipoOperacion ? tipoOperacion : ''}
-                onChange={e => setTipoOperacion(e.target.value)}
+                value={propiedad.tipoOperacion ? propiedad.tipoOperacion : ''}
+                onChange={handleChange}
                 className={classes.selectEmpty}
               >
                 <MenuItem value="">
@@ -361,97 +256,42 @@ const EditarPropiedad = props => {
           </Grid>
 
           <Grid item xs={12} md={12}>
-            <TextField
-              name="direccion"
-              label="Dirección del Inmueble"
-              fullWidth
-              value={direccion || ''}
-              onChange={e => setDireccion(e.target.value)}
-            />
+            <TextField name="direccion" label="Dirección del Inmueble" fullWidth value={propiedad.direccion || ''} onChange={handleChange} />
           </Grid>
 
           <Grid item xs={12} md={4}>
-            <TextField
-              name="comuna"
-              label="Comuna"
-              fullWidth
-              value={comuna || ''}
-              onChange={e => setComuna(e.target.value)}
-            />
+            <TextField name="comuna" label="Comuna" fullWidth value={propiedad.comuna || ''} onChange={handleChange} />
           </Grid>
 
           <Grid item xs={12} md={4}>
-            <TextField
-              name="ciudad"
-              label="Ciudad"
-              fullWidth
-              value={ciudad || ''}
-              onChange={e => setCiudad(e.target.value)}
-            />
+            <TextField name="ciudad" label="Ciudad" fullWidth value={propiedad.ciudad || ''} onChange={handleChange} />
           </Grid>
 
           <Grid item xs={12} md={4}>
-            <TextField
-              name="pais"
-              label="País"
-              fullWidth
-              value={pais || ''}
-              onChange={e => setPais(e.target.value)}
-            />
+            <TextField name="pais" label="País" fullWidth value={propiedad.pais || ''} onChange={handleChange} />
           </Grid>
 
           <Grid item xs={12} md={8}>
-            <TextField
-              name="descripcion"
-              label="Descripción Propiedad"
-              fullWidth
-              value={descripcion || ''}
-              multiline
-              onChange={e => setDescripcion(e.target.value)}
-            />
+            <TextField name="descripcion" label="Descripción Propiedad" fullWidth value={propiedad.descripcion || ''}  multiline onChange={handleChange} />
           </Grid>
 
           <Grid item xs={12} md={4}>
-            <TextField
-              name="precio"
-              label="Precio Propiedad"
-              fullWidth
-              value={precio || ''}
-              onChange={e => setPrecio(e.target.value)}
-            />
+            <TextField name="precio" label="Precio Propiedad" fullWidth value={propiedad.precio || ''} onChange={handleChange}/>
           </Grid>
 
           <Grid item xs={12} md={3}>
-            <TextField
-              name="mtsTotal"
-              label="Mts2 Total Propiedad"
-              fullWidth
-              value={mtsTotal || ''}
-              onChange={e => setMtsTotal(e.target.value)}
-            />
+            <TextField name="mtsTotal" label="Mts2 Total Propiedad" fullWidth value={propiedad.mtsTotal || ''} onChange={handleChange} />
           </Grid>
 
           <Grid item xs={12} md={3}>
-            <TextField
-              name="mtsConstruidos"
-              label="Mts2 Construidos"
-              fullWidth
-              value={mtsConstruidos || ''}
-              onChange={e => setMtsConstruidos(e.target.value)}
-            />
+            <TextField name="mtsConstruidos" label="Mts2 Construidos" fullWidth value={propiedad.mtsConstruidos || ''} onChange={handleChange}/>
           </Grid>
 
           <Grid item xs={12} md={3}>
             {/* <TextField name="mt2" label="Mt2 útiles" fullWidth /> */}
             <FormControl className={classes.formControl}>
               <InputLabel id="dormitorios-select-label">Dormitorios</InputLabel>
-              <Select name="dormitorios"
-                labelId="dormitorios-select-label"
-                id="dormitorios-select"
-                value={dormitorios ? dormitorios : ''}
-                onChange={e => setDormitorios(e.target.value)}
-                className={classes.selectEmpty}
-              >
+              <Select name="dormitorios" labelId="dormitorios-select-label" id="dormitorios-select" value={propiedad.dormitorios ? propiedad.dormitorios : ''} onChange={handleChange} className={classes.selectEmpty} >
                 <MenuItem value="">
                   <em>Seleccionar Dormitorios</em>
                 </MenuItem>
@@ -471,12 +311,9 @@ const EditarPropiedad = props => {
             {/* <TextField name="mt2" label="Mt2 útiles" fullWidth /> */}
             <FormControl className={classes.formControl}>
               <InputLabel id="banios-select-label">Baños</InputLabel>
-              <Select name="banios"
-                labelId="banios-select-label"
-                id="banios-select"
-                value={banios ? banios : ''}
-                onChange={e => setBanios(e.target.value)}
-                className={classes.selectEmpty}
+              <Select name="banios" labelId="banios-select-label"
+                id="banios-select" value={propiedad.banios ? propiedad.banios : ''}
+                onChange={handleChange} className={classes.selectEmpty}
               >
                 <MenuItem value="">
                   <em>Seleccionar Baños</em>
@@ -497,6 +334,7 @@ const EditarPropiedad = props => {
               withIcon={true}
               buttonText="Seleccionar Imágenes"
               onChange={subirImagenes}
+              // onChange={subirFotos}
               imgExtension={[".jpg", ".png", ".jpeg"]}
               maxFileSize={5242880}
             />
@@ -505,33 +343,21 @@ const EditarPropiedad = props => {
           <Grid item xs={12} sm={6}>
             <Table>
               <TableBody>
-                {fotos
-                  ? Object.values(fotos).map((foto, i) => {
-
-                      console.log('foto:: ', foto);
-                      return (
-                      <TableRow key={i}>
-                        <TableCell align="left">
-                          <img
-                            src={foto}
-                            style={style.fotoInmueble}
-                            alt="foto"
-                          />
-                        </TableCell>
-                        <TableCell align="left">
-                          <Button
-                            variant="contained"
-                            color="secondary"
-                            size="small"
-                            onClick={ eliminarFoto(foto) }
-                          >
-                            Eliminar
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                      )
-                    })
-                  : null}
+                { propiedad.fotos !== undefined && 
+                Object.values(propiedad.fotos).map( (foto, i) => {
+                    console.log('foto:: ', foto);
+                    return (
+                    <TableRow key={i}>
+                      <TableCell align="left">
+                        <img src={foto} style={style.fotoInmueble} alt="foto" />
+                      </TableCell>
+                      <TableCell align="left">
+                        <Button variant="contained" color="secondary" size="small" onClick={ eliminarFoto(foto) } >Eliminar</Button>
+                      </TableCell>
+                    </TableRow>
+                    )
+                  })
+                }
               </TableBody>
             </Table>
           </Grid>
@@ -557,4 +383,4 @@ const EditarPropiedad = props => {
   );
 };
 
-export default EditarPropiedad;
+export default connect(null, {openMensaje})(EditarPropiedad);

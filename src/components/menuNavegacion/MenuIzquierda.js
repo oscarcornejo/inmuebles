@@ -6,7 +6,7 @@ const MenuIzquierda = ({classes}) => {
     return ( 
         <div className={classes.list}>
             <List>
-                <ListItem component={Link} button to="/perfil-de-usuario">
+                <ListItem component={Link} button to="/perfil-usuario">
                     <i className="material-icons">account_box</i>
                     <ListItemText classes={{primary: classes.ListItemText}} primary="Perfil" />
                 </ListItem>

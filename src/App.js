@@ -43,6 +43,8 @@ function App() {
   const openSnackbar = useSelector(state => state.openSnackbarReducer.open);
   const openSnackbarMessage = useSelector(state => state.openSnackbarReducer.mensaje);
 
+  // console.log('usuarioLogeado:: ', usuarioLogeado)
+
   useEffect(() => {
     
   }, [openSnackbar, openSnackbarMessage])
@@ -73,9 +75,8 @@ function App() {
                   render={ () => usuarioLogeado ? 
                   <CrearPropiedad /> : <Redirect to='/ingresar-usuario' /> }  
             />
-            <Route exact path="/perfil-de-usuario" 
-                  render={ () => usuarioLogeado ? 
-                  <PerfilUsuario /> : <Redirect to='/ingresar-usuario' /> } 
+            <Route exact path="/perfil-usuario" 
+                  render={ () => usuarioLogeado ? <PerfilUsuario /> : <Redirect to='/ingresar-usuario' /> } 
             />
             <Route exact path="/editar-propiedad/:id" 
                 render={ (props) => usuarioLogeado ? 

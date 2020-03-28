@@ -1,22 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Paper,
-  Container,
-  Grid,
-  Breadcrumbs,
-  Link,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  TextField,
-  Button,
-  Table,
-  TableRow,
-  TableCell,
-  TableBody
-} from "@material-ui/core";
+import {Paper,Container,Grid, Breadcrumbs, Link, Typography, FormControl, InputLabel, Select, MenuItem, TextField, Button, Table, TableRow, TableCell, TableBody, Divider } from "@material-ui/core";
 import HomeIcon from "@material-ui/icons/Home";
 import ImageUploader from "react-images-upload";
 import uuid from "uuid";
@@ -91,10 +74,10 @@ const Propiedad = props => {
   const [banios, setBanios] = useState(0);
   const [precio, setPrecio] = useState(0);
   const [fotos, setFotos] = useState([]);
-  const [archivos, setArchivos] = useState([]);
   const [propiedad, setPropiedad] = useState({});
-
-  const [values, setValues] = useState({});
+  
+  // const [archivos, setArchivos] = useState([]);
+  // const [values, setValues] = useState({});
 
   const { id } = props.match.params;
 
@@ -297,214 +280,67 @@ const Propiedad = props => {
                 <HomeIcon style={style.homeIcon} />
                 Home
               </Link>
-              <Typography color="textPrimary">Editar Inmueble</Typography>
+              <Typography color="textPrimary">Inmueble</Typography>
             </Breadcrumbs>
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <TextField
-              name='nombrePropiedad'
-              label="Nombre Propiedad"
-              fullWidth
-              value={nombrePropiedad || ''}
-              onChange={e => setNombrePropiedad(e.target.value)}
-                // value={nombrePropiedad || ''}
-                // onChange={cambiarDato}
-            />
+            <Typography >Nombre Propiedad: {nombrePropiedad || ''}</Typography>
           </Grid>
 
           <Grid item xs={12} md={3}>
-            <FormControl className={classes.formControl}>
-              <InputLabel id="dormitorios-select-label">
-                Tipo Propiedad
-              </InputLabel>
-              <Select name='tipoPropiedad'
-                labelId="dormitorios-select-label"
-                id="dormitorios-select"
-                value={tipoPropiedad ? tipoPropiedad : ''}
-                onChange={e => setTipoPropiedad(e.target.value)}
-                className={classes.selectEmpty}
-              >
-                <MenuItem value=''>
-                  <em>Seleccionar Tipo</em>
-                </MenuItem>
-                <MenuItem value={"Casa"}>Casa</MenuItem>
-                <MenuItem value={"Departamento"}>Departamento</MenuItem>
-                <MenuItem value={"ParcelaAgrado"}>Parcela de Agrado</MenuItem>
-                <MenuItem value={"Terreno"}>Terreno</MenuItem>
-              </Select>
-            </FormControl>
+            <Typography >Tipo Propiedad: {tipoPropiedad ? tipoPropiedad : ''}</Typography>
           </Grid>
 
           <Grid item xs={12} md={3}>
-            <FormControl className={classes.formControl}>
-              <InputLabel id="dormitorios-select-label">
-                Tipo de Operación
-              </InputLabel>
-              <Select name='tipoOperacion'
-                labelId="dormitorios-select-label"
-                id="dormitorios-select"
-                value={tipoOperacion ? tipoOperacion : ''}
-                onChange={e => setTipoOperacion(e.target.value)}
-                className={classes.selectEmpty}
-              >
-                <MenuItem value="">
-                  <em>Seleccionar Operación</em>
-                </MenuItem>
-                <MenuItem value={"Arriendo"}>Arriendo</MenuItem>
-                <MenuItem value={"ArriendoTemporada"}>
-                  Arriendo Temporada
-                </MenuItem>
-                <MenuItem value={"Venta"}>Venta</MenuItem>
-              </Select>
-            </FormControl>
+            <Typography> Tipo Operación: {tipoOperacion ? tipoOperacion : ''}</Typography>
           </Grid>
 
           <Grid item xs={12} md={12}>
-            <TextField
-              name="direccion"
-              label="Dirección del Inmueble"
-              fullWidth
-              value={direccion || ''}
-              onChange={e => setDireccion(e.target.value)}
-            />
+            <Typography >Dirección: {direccion || ''}</Typography>
           </Grid>
 
           <Grid item xs={12} md={4}>
-            <TextField
-              name="comuna"
-              label="Comuna"
-              fullWidth
-              value={comuna || ''}
-              onChange={e => setComuna(e.target.value)}
-            />
+            <Typography >Comuna: {comuna || ''}</Typography>
           </Grid>
 
           <Grid item xs={12} md={4}>
-            <TextField
-              name="ciudad"
-              label="Ciudad"
-              fullWidth
-              value={ciudad || ''}
-              onChange={e => setCiudad(e.target.value)}
-            />
+            <Typography >Ciudad: {ciudad || ''}</Typography>
           </Grid>
 
           <Grid item xs={12} md={4}>
-            <TextField
-              name="pais"
-              label="País"
-              fullWidth
-              value={pais || ''}
-              onChange={e => setPais(e.target.value)}
-            />
+            <Typography >País: {pais || ''}</Typography>
           </Grid>
 
           <Grid item xs={12} md={8}>
-            <TextField
-              name="descripcion"
-              label="Descripción Propiedad"
-              fullWidth
-              value={descripcion || ''}
-              multiline
-              onChange={e => setDescripcion(e.target.value)}
-            />
+            <Typography >Descripción: {descripcion || ''}</Typography>
           </Grid>
 
           <Grid item xs={12} md={4}>
-            <TextField
-              name="precio"
-              label="Precio Propiedad"
-              fullWidth
-              value={precio || ''}
-              onChange={e => setPrecio(e.target.value)}
-            />
+            <Typography >Precio: {precio || ''}</Typography>
           </Grid>
 
           <Grid item xs={12} md={3}>
-            <TextField
-              name="mtsTotal"
-              label="Mts2 Total Propiedad"
-              fullWidth
-              value={mtsTotal || ''}
-              onChange={e => setMtsTotal(e.target.value)}
-            />
+            <Typography >Mts. Total: {mtsTotal || ''}</Typography>
           </Grid>
 
           <Grid item xs={12} md={3}>
-            <TextField
-              name="mtsConstruidos"
-              label="Mts2 Construidos"
-              fullWidth
-              value={mtsConstruidos || ''}
-              onChange={e => setMtsConstruidos(e.target.value)}
-            />
+            <Typography >Mts. Construidos: {mtsConstruidos || ''}</Typography>
           </Grid>
 
           <Grid item xs={12} md={3}>
-            {/* <TextField name="mt2" label="Mt2 útiles" fullWidth /> */}
-            <FormControl className={classes.formControl}>
-              <InputLabel id="dormitorios-select-label">Dormitorios</InputLabel>
-              <Select name="dormitorios"
-                labelId="dormitorios-select-label"
-                id="dormitorios-select"
-                value={dormitorios ? dormitorios : ''}
-                onChange={e => setDormitorios(e.target.value)}
-                className={classes.selectEmpty}
-              >
-                <MenuItem value="">
-                  <em>Seleccionar Dormitorios</em>
-                </MenuItem>
-                <MenuItem value={0}>0</MenuItem>
-                <MenuItem value={1}>1</MenuItem>
-                <MenuItem value={2}>2</MenuItem>
-                <MenuItem value={3}>3</MenuItem>
-                <MenuItem value={4}>4</MenuItem>
-                <MenuItem value={5}>5</MenuItem>
-                <MenuItem value={6}>6</MenuItem>
-                <MenuItem value={"+6"}>Más de 6</MenuItem>
-              </Select>
-            </FormControl>
+            <Typography >Dormitorios: {dormitorios ? dormitorios : ''}</Typography>
           </Grid>
 
           <Grid item xs={12} md={3}>
-            {/* <TextField name="mt2" label="Mt2 útiles" fullWidth /> */}
-            <FormControl className={classes.formControl}>
-              <InputLabel id="banios-select-label">Baños</InputLabel>
-              <Select name="banios"
-                labelId="banios-select-label"
-                id="banios-select"
-                value={banios ? banios : ''}
-                onChange={e => setBanios(e.target.value)}
-                className={classes.selectEmpty}
-              >
-                <MenuItem value="">
-                  <em>Seleccionar Baños</em>
-                </MenuItem>
-                <MenuItem value={0}>0</MenuItem>
-                <MenuItem value={1}>1</MenuItem>
-                <MenuItem value={2}>2</MenuItem>
-                <MenuItem value={3}>3</MenuItem>
-                <MenuItem value={4}>4</MenuItem>
-                <MenuItem value={"+4"}>Más de 4</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <ImageUploader
-              key={fotoKey}
-              withIcon={true}
-              buttonText="Seleccionar Imágenes"
-              onChange={subirImagenes}
-              imgExtension={[".jpg", ".png", ".jpeg"]}
-              maxFileSize={5242880}
-            />
+            <Typography >Baños: {banios ? banios : ''}</Typography>
           </Grid>
 
           <Grid item xs={12} sm={6}>
             <Table>
               <TableBody>
+                <Divider />
+                
                 {fotos
                   ? Object.values(fotos).map((foto, i) => {
 
@@ -518,16 +354,6 @@ const Propiedad = props => {
                             alt="foto"
                           />
                         </TableCell>
-                        <TableCell align="left">
-                          <Button
-                            variant="contained"
-                            color="secondary"
-                            size="small"
-                            onClick={ eliminarFoto(foto) }
-                          >
-                            Eliminar
-                          </Button>
-                        </TableCell>
                       </TableRow>
                       )
                     })
@@ -537,21 +363,7 @@ const Propiedad = props => {
           </Grid>
         </Grid>
 
-        <Grid container justify="center">
-          <Grid item xs={12} sm={6}>
-            <Button
-              type="button"
-              fullWidth
-              variant="contained"
-              size="large"
-              color="primary"
-              style={style.submit}
-              onClick={guardarPropiedad}
-            >
-              Guardar
-            </Button>
-          </Grid>
-        </Grid>
+        
       </Paper>
     </Container>
   );

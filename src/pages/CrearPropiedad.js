@@ -88,7 +88,7 @@ const CrearPropiedad = (props) => {
 
 
     const subirFotos = (documentos) => {
-      // console.log('DOCUMENTOS', documentos);
+      console.log('DOCUMENTOS', documentos);
       Object.keys(documentos).forEach(key => {
           documentos[key].urlTemp = URL.createObjectURL(documentos[key])
       });
@@ -105,7 +105,7 @@ const CrearPropiedad = (props) => {
   }
 
 
-  const subirImagenes = (e) => {
+  const subirPropiedad = (e) => {
     
     e.preventDefault();
     const propiedadData = {
@@ -129,7 +129,7 @@ const CrearPropiedad = (props) => {
     const keywords = crearKeyword(textoBusqueda);
    
     guardarFotosMultiples(archivos)
-        .then( async (urlImagenes) => {
+      .then( async (urlImagenes) => {
         const urlFotos = Object.assign({}, urlImagenes);
         const id = uuid.v4();
         propiedadData.fotos = urlFotos;
@@ -151,8 +151,9 @@ const CrearPropiedad = (props) => {
             }
             openMensaje(mensaje);
             });
-        })
+      })
     }
+
     const eliminarFoto = (nombreFoto) => {
         setArchivos(archivos.filter(archivo => {
             return archivo.name !== nombreFoto
@@ -320,7 +321,7 @@ const CrearPropiedad = (props) => {
 
         <Grid container justify="center">
             <Grid item xs={12} md={6}>
-                <Button onClick={subirImagenes} type='button' fullWidth variant='contained' size='large' color='primary' style={style.submit}>
+                <Button onClick={subirPropiedad} type='button' fullWidth variant='contained' size='large' color='primary' style={style.submit}>
                     Publicar Propiedad
                 </Button>
             </Grid>

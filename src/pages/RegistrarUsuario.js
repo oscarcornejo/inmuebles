@@ -19,7 +19,6 @@ const RegistrarUsuario = ({history, crearUsuario, openMensaje}) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-
     const style ={
         paper: {
             marginTop: 8,
@@ -107,19 +106,19 @@ const RegistrarUsuario = ({history, crearUsuario, openMensaje}) => {
                                 
                                 <Grid container spacing={3}>
                                     <Grid item md={6} xs={12}>
-                                        <TextField required id="nombre-required" label="Required" value={nombre} onChange={(e) => setNombre(e.target.value)} name='nombre' fullWidth label='Ej: Oscar' />
+                                        <TextField required id="nombre-required" label='Ej: Oscar' value={nombre} onChange={(e) => setNombre(e.target.value)} name='nombre' fullWidth  />
                                     </Grid>
 
                                     <Grid item md={6} xs={12}>
-                                        <TextField required id="apellido-required" label="Required" value={apellido} onChange={(e) => setApellido(e.target.value)} name='apellido' fullWidth label='Ej: Cornejo' />
+                                        <TextField required id="apellido-required" label='Ej: Cornejo' value={apellido} onChange={(e) => setApellido(e.target.value)} name='apellido' fullWidth  />
                                     </Grid>
 
                                     <Grid item md={6} xs={12}>
-                                        <TextField required id="email-required" label="Required" value={email} onChange={(e) => setEmail(e.target.value)} name='email' fullWidth label='Ej: oscar@cornejo.cl' />
+                                        <TextField required id="email-required" label='Ej: oscar@cornejo.cl' value={email} onChange={(e) => setEmail(e.target.value)} name='email' fullWidth  />
                                     </Grid>
 
                                     <Grid item md={6} xs={12}>
-                                        <TextField required id="password-required" label="Required" type="password" value={password} onChange={(e) => setPassword(e.target.value)} name='password' fullWidth label='Ej: unP4ssW0rd1nic0' />
+                                        <TextField required id="password-required" label='Ej: unP4ssW0rd1nic0' type="password" value={password} onChange={(e) => setPassword(e.target.value)} name='password' fullWidth  />
                                     </Grid>
                                 </Grid>
                             </CardContent>
