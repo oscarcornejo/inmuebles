@@ -73,9 +73,9 @@ const EditarPropiedad = props => {
 
   useEffect(() => {
     const getData = async () => {
-      firebase.firestore().collection("propiedades").doc(id).get()
+      firebase.firestore().collection("inmuebles").doc(id).get()
         .then( resp =>  {
-          console.log('propiedades:: ', resp.data());
+          console.log('inmuebles:: ', resp.data());
           setPropiedad(resp.data());
         }).catch( error => {
           console.log(error.message);
@@ -101,7 +101,7 @@ const EditarPropiedad = props => {
     .then( async (urlImagenes) => {
       propiedad.fotos = propiedad.fotos.concat(urlImagenes);
       
-      await firebase.firestore().collection("propiedades").doc(id).set(propiedad, {merge: true})
+      await firebase.firestore().collection("inmuebles").doc(id).set(propiedad, {merge: true})
         .then( (success) =>{
           setPropiedad(propiedad);
           const mensaje = { open: true,  mensaje: 'La Propiedad se ha publicado con Éxito' }
@@ -166,7 +166,7 @@ const EditarPropiedad = props => {
     //     propiedadData.fotos = urlFotos;
     //     propiedadData.keywords = keywords;
 
-    //         await firebase.firestore().collection("propiedades").doc(id).set(propiedadData, {merge: true})
+    //         await firebase.firestore().collection("inmuebles").doc(id).set(propiedadData, {merge: true})
     //         .then( (success) =>{
     //             setPropiedad(propiedadData);
     //             const mensaje = {
@@ -186,7 +186,7 @@ const EditarPropiedad = props => {
 
     // firebase
     //   .firestore()
-    //   .collection("propiedades")
+    //   .collection("inmuebles")
     //   .doc(id)
     //   .set(propiedadData, { merge: true })
     //   .then(success => {

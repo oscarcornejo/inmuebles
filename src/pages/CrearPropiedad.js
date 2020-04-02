@@ -135,7 +135,7 @@ const CrearPropiedad = (props) => {
         propiedadData.fotos = urlFotos;
         propiedadData.keywords = keywords;
 
-            await firebase.firestore().collection("propiedades").doc(id).set(propiedadData, {merge: true})
+            await firebase.firestore().collection("inmuebles").doc(id).set(propiedadData, {merge: true})
             .then( (success) =>{
                 setPropiedad(propiedadData);
                 const mensaje = {

@@ -5,7 +5,7 @@ import Navbar from './components/Navbar';
 
 // PAGES
 import RegistrarUsuario from './pages/RegistrarUsuario';
-import ListaPropiedades from './pages/ListaPropiedades';
+import Listainmuebles from './pages/ListaPropiedades';
 import IngresoUsuario from './pages/IngresoUsuario';
 
 // REACT ROUTER 

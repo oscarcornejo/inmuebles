@@ -85,7 +85,7 @@ const Propiedad = props => {
     const fetchData = async () => {
       await firebase
         .firestore()
-        .collection("propiedades")
+        .collection("inmuebles")
         .doc(id)
         .get()
         .then(resp => {
@@ -222,7 +222,7 @@ const Propiedad = props => {
         // archivos
       };
 
-    firebase.firestore().collection("propiedades").doc(id).set(propiedadData, { merge: true })
+    firebase.firestore().collection("inmuebles").doc(id).set(propiedadData, { merge: true })
       .then(success => {
         setPropiedad(propiedadData);
       });
@@ -262,7 +262,7 @@ const Propiedad = props => {
 
     firebase
       .firestore()
-      .collection("propiedades")
+      .collection("inmuebles")
       .doc(id)
       .set(propiedadData, { merge: true })
       .then(success => {

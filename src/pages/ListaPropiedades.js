@@ -41,12 +41,12 @@ const style = {
 };
 
 const ListaPropiedades = ({history}) => {
-    const [propiedades, setPropiedades] = useState([]);
+    const [inmuebles, setPropiedades] = useState([]);
     const [terminoBusqueda, setTerminoBusqueda] = useState("");
 
     useEffect(() => {
         let listaPropiedades = [];
-        firebase.firestore().collection("propiedades").orderBy("direccion").get()
+        firebase.firestore().collection("inmuebles").orderBy("direccion").get()
         .then( async (resp )=> {
             await resp.docs.forEach(doc => {
                 listaPropiedades.push({
@@ -71,14 +71,14 @@ const ListaPropiedades = ({history}) => {
             name: e.target.value,
             typing: false,
             typingTimeout: setTimeout( goTime => {
-                let objectQuery = firebase.firestore().collection("propiedades")
+                let objectQuery = firebase.firestore().collection("inmuebles")
                 .orderBy("direccion").where( 
                     "keywords", "array-contains",
                     terminoBusqueda.name.toLowerCase()
                 );
 
                 if (terminoBusqueda.name > 1 || terminoBusqueda.name.trim() === "") {
-                    objectQuery = firebase.firestore().collection("propiedades").orderBy("direccion");
+                    objectQuery = firebase.firestore().collection("inmuebles").orderBy("direccion");
                 }
 
                 objectQuery.get()
@@ -90,7 +90,7 @@ const ListaPropiedades = ({history}) => {
                     });
                     console.log("arrayPropiedad:: ", arrayPropiedad);
                     setPropiedades(arrayPropiedad);
-                    // console.log("DATA:: ", propiedades);
+                    // console.log("DATA:: ", inmuebles);
                 }).catch( error => {
                     console.log(error);
                 });
@@ -99,13 +99,13 @@ const ListaPropiedades = ({history}) => {
     };
 
     const eliminarPropiedad = id => {
-        firebase.firestore().collection("propiedades").doc(id).delete().then( resp => {
+        firebase.firestore().collection("inmuebles").doc(id).delete().then( resp => {
             eliminarPropiedadDelEstado(id)
         })
     }
 
     const eliminarPropiedadDelEstado = id => {
-        const newPropiedades = propiedades.filter( propiedad => propiedad.id !== id );
+        const newPropiedades = inmuebles.filter( propiedad => propiedad.id !== id );
         setPropiedades(newPropiedades);
     }
 
@@ -145,7 +145,7 @@ const ListaPropiedades = ({history}) => {
 
         <Grid item xs={12} sm={12} style={style.gridTextfield}>
           <Grid container spacing={4}>
-            { propiedades.map(item => {
+            { inmuebles.map(item => {
               return (
                 <Grid item key={item.id} xs={12} sm={6} md={4}>
                   <Card style={style.card}>
